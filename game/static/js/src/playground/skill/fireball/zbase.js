@@ -1,32 +1,32 @@
 class FireBall extends AcGameObject {
-    constructor (playground, player, x, y, radius, vx, vy, color, speed, move_length, damage) { // 坐标，半径、速度（矢量方向），颜色，模速度、射程距离，火球伤害值
+    constructor(playground, player, x, y, radius, vx, vy, color, speed, move_length, damage) {
         super();
         this.playground = playground;
         this.player = player;
         this.ctx = this.playground.game_map.ctx;
         this.x = x;
         this.y = y;
-        this.vx = vx; 
-        this.vy = vy; 
+        this.vx = vx;
+        this.vy = vy;
         this.radius = radius;
-        this.color = color;  
+        this.color = color;
         this.speed = speed;
         this.move_length = move_length;
         this.damage = damage;
         this.eps = 0.1;
-    }   
+    }
 
     start() {
-    }   
+    }
 
     update() {
-        if (this.move_length < this.eps) {  // 如果已经移动完了，就需要销毁自己
+        if (this.move_length < this.eps) {
             this.destroy();
             return false;
         }
 
         let moved = Math.min(this.move_length, this.speed * this.timedelta / 1000);
-        this.x += this.vx * moved;  // 方向乘距离
+        this.x += this.vx * moved;
         this.y += this.vy * moved;
         this.move_length -= moved;
 
@@ -36,6 +36,7 @@ class FireBall extends AcGameObject {
                 this.attack(player);
             }
         }
+
         this.render();
     }
 
@@ -45,9 +46,9 @@ class FireBall extends AcGameObject {
         return Math.sqrt(dx * dx + dy * dy);
     }
 
-    is_collision(obj) {
-        let distance = this.get_dist(this.x, this.y, obj.x, obj.y);
-        if (distance < this.radius + obj.radius)
+    is_collision(player) {
+        let distance = this.get_dist(this.x, this.y, player.x, player.y);
+        if (distance < this.radius + player.radius)
             return true;
         return false;
     }
