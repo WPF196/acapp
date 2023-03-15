@@ -6,6 +6,7 @@ class Settings {
         this.username = "";
         this.photo = "";
 
+        //以下是登录界面可视化的编辑
         this.$settings = $(`
 <div class="ac-game-settings">
     <div class="ac-game-settings-login">
@@ -72,7 +73,7 @@ class Settings {
         </div>
         <br>
         <div class="ac-game-settings-acwing">
-            <img width="30" src="https://app4971.acapp.acwing.com.cn/static/image/settings/acwing_logo.png">
+            <img width="30" src="https://app165.acapp.acwing.com.cn/static/image/settings/acwing_logo.png">
             <br>
             <div>
                 AcWing一键登录
@@ -81,6 +82,7 @@ class Settings {
     </div>
 </div>
 `);
+        //通过.find函数，将可视化界面的元素索引出来，例如登录按钮，注册按钮等
         this.$login = this.$settings.find(".ac-game-settings-login");
         this.$login_username = this.$login.find(".ac-game-settings-username input");
         this.$login_password = this.$login.find(".ac-game-settings-password input");
@@ -100,7 +102,7 @@ class Settings {
 
         this.$register.hide();
 
-        this.root.$ac_game.append(this.$settings);
+        this.root.$ac_game.append(this.$settings);      //将setting加到ac_game中去
 
         this.start();
     }
@@ -110,7 +112,7 @@ class Settings {
         this.add_listening_events();
     }
 
-    add_listening_events() {
+    add_listening_events() {        //监听登录和注册
         this.add_listening_events_login();
         this.add_listening_events_register();
     }
@@ -143,7 +145,7 @@ class Settings {
         this.$login_error_message.empty();
 
         $.ajax({
-            url: "https://app165.acapp.acwing.com.cn/settings/login/",
+            url: "https://app4971.acapp.acwing.com.cn/settings/login/",
             type: "GET",
             data: {
                 username: username,
@@ -168,7 +170,7 @@ class Settings {
         this.$register_error_message.empty();
 
         $.ajax({
-            url: "https://app165.acapp.acwing.com.cn/settings/register/",
+            url: "https://app4971.acapp.acwing.com.cn/settings/register/",
             type: "GET",
             data: {
                 username: username,
@@ -190,7 +192,7 @@ class Settings {
         if (this.platform === "ACAPP") return false;
 
         $.ajax({
-            url: "https://app165.acapp.acwing.com.cn/settings/logout/",
+            url: "https://app4971.acapp.acwing.com.cn/settings/logout/",
             type: "GET",
             success: function(resp) {
                 console.log(resp);
@@ -211,16 +213,16 @@ class Settings {
         this.$login.show();
     }
 
-    getinfo() {
+    getinfo() {     //获取信息
         let outer = this;
 
         $.ajax({
-            url: "https://app165.acapp.acwing.com.cn/settings/getinfo/",
+            url: "https://app4971.acapp.acwing.com.cn/settings/getinfo/",       //从后台路由位置获取信息
             type: "GET",
             data: {
                 platform: outer.platform,
             },
-            success: function(resp) {
+            success: function(resp) {       //如果信息获取成功，则提取相关信息
                 console.log(resp);
                 if (resp.result === "success") {
                     outer.username = resp.username;
@@ -242,3 +244,4 @@ class Settings {
         this.$settings.show();
     }
 }
+

@@ -13,7 +13,7 @@ class AcGameMenu {
         </div>
         <br>
         <div class="ac-game-menu-field-item ac-game-menu-field-item-settings">
-            设置
+            退出
         </div>
     </div>
 </div>
@@ -42,6 +42,7 @@ class AcGameMenu {
         });
         this.$settings.click(function(){
             console.log("click settings");
+            outer.root.settings.logout_on_remote();
         });
     }
 
@@ -54,9 +55,9 @@ class AcGameMenu {
     }
 }
 
-let AC_GAME_OBJECTS = [];       //存放所有对象(物体)的数组
+let AC_GAME_OBJECTS = [];
 
-class AcGameObject {            //定义一个渲染的基类
+class AcGameObject {
     constructor() {
         AC_GAME_OBJECTS.push(this);
 
@@ -75,7 +76,7 @@ class AcGameObject {            //定义一个渲染的基类
 
     destroy() {  // 删掉该物体
         this.on_destroy();
-        //遍历一遍所有对象，找到当前对象并删除
+
         for (let i = 0; i < AC_GAME_OBJECTS.length; i ++ ) {
             if (AC_GAME_OBJECTS[i] === this) {
                 AC_GAME_OBJECTS.splice(i, 1);
@@ -86,17 +87,13 @@ class AcGameObject {            //定义一个渲染的基类
 }
 
 let last_timestamp;
-//用递归的结构，保证每一帧都调用一次函数,即一直无限渲染
 let AC_GAME_ANIMATION = function(timestamp) {
-    //每一帧要遍历所有物体，让每个物体执行update函数
     for (let i = 0; i < AC_GAME_OBJECTS.length; i ++ ) {
         let obj = AC_GAME_OBJECTS[i];
-        //用has_called_start标记每个物体，保证每一帧，每个物体只执行一次函数
         if (!obj.has_called_start) {
             obj.start();
             obj.has_called_start = true;
         } else {
-            //算出2次调用的间隔时间，为计算速度做准备
             obj.timedelta = timestamp - last_timestamp;
             obj.update();
         }
@@ -467,6 +464,7 @@ class Settings {
         this.username = "";
         this.photo = "";
 
+        //以下是登录界面可视化的编辑
         this.$settings = $(`
 <div class="ac-game-settings">
     <div class="ac-game-settings-login">
@@ -533,7 +531,7 @@ class Settings {
         </div>
         <br>
         <div class="ac-game-settings-acwing">
-            <img width="30" src="https://app4971.acapp.acwing.com.cn/static/image/settings/acwing_logo.png">
+            <img width="30" src="https://app165.acapp.acwing.com.cn/static/image/settings/acwing_logo.png">
             <br>
             <div>
                 AcWing一键登录
@@ -542,6 +540,7 @@ class Settings {
     </div>
 </div>
 `);
+        //通过.find函数，将可视化界面的元素索引出来，例如登录按钮，注册按钮等
         this.$login = this.$settings.find(".ac-game-settings-login");
         this.$login_username = this.$login.find(".ac-game-settings-username input");
         this.$login_password = this.$login.find(".ac-game-settings-password input");
@@ -561,7 +560,7 @@ class Settings {
 
         this.$register.hide();
 
-        this.root.$ac_game.append(this.$settings);
+        this.root.$ac_game.append(this.$settings);      //将setting加到ac_game中去
 
         this.start();
     }
@@ -571,7 +570,7 @@ class Settings {
         this.add_listening_events();
     }
 
-    add_listening_events() {
+    add_listening_events() {        //监听登录和注册
         this.add_listening_events_login();
         this.add_listening_events_register();
     }
@@ -604,7 +603,7 @@ class Settings {
         this.$login_error_message.empty();
 
         $.ajax({
-            url: "https://app165.acapp.acwing.com.cn/settings/login/",
+            url: "https://app4971.acapp.acwing.com.cn/settings/login/",
             type: "GET",
             data: {
                 username: username,
@@ -629,7 +628,7 @@ class Settings {
         this.$register_error_message.empty();
 
         $.ajax({
-            url: "https://app165.acapp.acwing.com.cn/settings/register/",
+            url: "https://app4971.acapp.acwing.com.cn/settings/register/",
             type: "GET",
             data: {
                 username: username,
@@ -651,7 +650,7 @@ class Settings {
         if (this.platform === "ACAPP") return false;
 
         $.ajax({
-            url: "https://app165.acapp.acwing.com.cn/settings/logout/",
+            url: "https://app4971.acapp.acwing.com.cn/settings/logout/",
             type: "GET",
             success: function(resp) {
                 console.log(resp);
@@ -672,16 +671,16 @@ class Settings {
         this.$login.show();
     }
 
-    getinfo() {
+    getinfo() {     //获取信息
         let outer = this;
 
         $.ajax({
-            url: "https://app165.acapp.acwing.com.cn/settings/getinfo/",
+            url: "https://app4971.acapp.acwing.com.cn/settings/getinfo/",       //从后台路由位置获取信息
             type: "GET",
             data: {
                 platform: outer.platform,
             },
-            success: function(resp) {
+            success: function(resp) {       //如果信息获取成功，则提取相关信息
                 console.log(resp);
                 if (resp.result === "success") {
                     outer.username = resp.username;
@@ -703,6 +702,7 @@ class Settings {
         this.$settings.show();
     }
 }
+
 export class AcGame {
     constructor(id, AcWingOS) {
         this.id = id;

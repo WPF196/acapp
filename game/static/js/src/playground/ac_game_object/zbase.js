@@ -1,6 +1,6 @@
-let AC_GAME_OBJECTS = [];       //存放所有对象(物体)的数组
+let AC_GAME_OBJECTS = [];
 
-class AcGameObject {            //定义一个渲染的基类
+class AcGameObject {
     constructor() {
         AC_GAME_OBJECTS.push(this);
 
@@ -19,7 +19,7 @@ class AcGameObject {            //定义一个渲染的基类
 
     destroy() {  // 删掉该物体
         this.on_destroy();
-        //遍历一遍所有对象，找到当前对象并删除
+
         for (let i = 0; i < AC_GAME_OBJECTS.length; i ++ ) {
             if (AC_GAME_OBJECTS[i] === this) {
                 AC_GAME_OBJECTS.splice(i, 1);
@@ -30,17 +30,13 @@ class AcGameObject {            //定义一个渲染的基类
 }
 
 let last_timestamp;
-//用递归的结构，保证每一帧都调用一次函数,即一直无限渲染
 let AC_GAME_ANIMATION = function(timestamp) {
-    //每一帧要遍历所有物体，让每个物体执行update函数
     for (let i = 0; i < AC_GAME_OBJECTS.length; i ++ ) {
         let obj = AC_GAME_OBJECTS[i];
-        //用has_called_start标记每个物体，保证每一帧，每个物体只执行一次函数
         if (!obj.has_called_start) {
             obj.start();
             obj.has_called_start = true;
         } else {
-            //算出2次调用的间隔时间，为计算速度做准备
             obj.timedelta = timestamp - last_timestamp;
             obj.update();
         }
