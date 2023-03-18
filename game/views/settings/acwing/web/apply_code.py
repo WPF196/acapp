@@ -1,6 +1,5 @@
 #向acwing申请一个授权码（code）
 
-
 from django.http import JsonResponse
 from urllib.parse import quote
 from random import randint
@@ -16,6 +15,7 @@ def get_state():        #随机生成回调状态随机值，8位，每一位0~9
 
 def apply_code(request):
     # 传递的四个参数
+
     # 1.应用的唯一id
     appid = "4971"
     # 2.接收授权码的地址
@@ -27,6 +27,7 @@ def apply_code(request):
 
     cache.set(state, True, 7200)    # 把随机的状态码存入 redis 中，有效期 2 小时
 
+    #申请授权码的地址
     apply_code_url = "https://www.acwing.com/third_party/api/oauth2/web/authorize/"
 
     return JsonResponse({
