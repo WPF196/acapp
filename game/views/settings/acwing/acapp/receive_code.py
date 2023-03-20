@@ -1,6 +1,6 @@
 # 接收一个来自acwing的授权码(code)
 
-from django.shortcuts import redirect
+from django.http import JsonResponse
 from django.core.cache import cache
 from django.contrib.auth.models import User
 from game.models.player.player import Player
@@ -10,12 +10,22 @@ import requests
 
 def receive_code(request):
     data = request.GET
+
+    if "errcode" in data:
+        return JsonResponse({
+            'result': "apply failed",
+            'errcode': data['errcode'],
+            'errmsg': data['errmsg']
+        })
+
     code = data.get('code')
     state = data.get('state')
 
     # 如果缓存中没有这个状态回调值  则返回初始界面
     if not cache.has_key(state):
-        return redirect("index")
+        return JsonResponse({
+            'result': "state not exist"
+        })
     cache.delete(state)
 
 
@@ -38,8 +48,12 @@ def receive_code(request):
     # 如果用户存在，则直接登录即可
     players = Player.objects.filter(openid=openid)
     if players.exists():
-        login(request, players[0].user)
-        return redirect("index")
+        player = players[0]
+        return JsonResponse({
+            'result': "success",
+            'username': player.user.username,
+            'photo': player.photo,
+        })
 
     #获取用户信息链接 和 相关参数
     get_userinfo_url = "https://www.acwing.com/third_party/api/meta/identity/getinfo/"
@@ -61,7 +75,10 @@ def receive_code(request):
     user = User.objects.create(username=username)
     player = Player.objects.create(user=user, photo=photo, openid=openid)
 
-    # 获取到信息后，直接登录这个玩家
-    login(request, user)
 
-    return redirect("index")
+    return JsonResponse({
+        'result': "success",
+        'username': player.user.username,
+        'photo': player.photo,
+    })
+

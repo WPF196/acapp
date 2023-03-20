@@ -1,8 +1,10 @@
 class Settings {
     constructor(root) {
         this.root = root;
-        this.platform = "WEB";
+        this.platform = "WEB";      //默认为web端
+         //如果登录端口为acwing，则this.root.AWing会被acwing系统置为true 
         if (this.root.AcWingOS) this.platform = "ACAPP";
+
         this.username = "";
         this.photo = "";
 
@@ -110,8 +112,12 @@ class Settings {
     }
 
     start() {
-        this.getinfo();
-        this.add_listening_events();
+        if (this.platform === "ACAPP"){
+            this.getinfo_acapp();
+        }else{
+            this.getinfo_web();
+            this.add_listening_events();
+        }
     }
 
     add_listening_events() {        //监听各项动作
@@ -221,7 +227,7 @@ class Settings {
                     location.reload();
                 }
             }
-        });
+        }); 
     }
 
     register() {  // 打开注册界面
@@ -234,7 +240,36 @@ class Settings {
         this.$login.show();
     }
 
-    getinfo() {     //获取信息
+
+    acapp_login(appid, redirect_uri, scope, state){
+        let outer = this;
+        this.root.AcWingOS.api.oauth2.authorize(appid, redirect_uri, scope, state, function(resp){
+            console.log("called from acwing_login function");
+            console.log(resp);
+            if(resp.result === "success"){
+                outer.username = resp.username;
+                outer.photo = resp.photo;
+                outer.hide();
+                outer.root.menu.show();
+            }
+        });
+    }
+
+    getinfo_acapp() {
+        let outer = this;
+        $.ajax({
+            url: "https://app4971.acapp.acwing.com.cn/settings/acwing/acapp/apply_code/",
+            type: "GET",
+            success: function(resp){
+                if(resp.result === "success"){
+                   outer.acapp_login(resp.appid, resp.redirect_uri, resp.scope, resp.state);
+                }
+            }
+        });
+
+    }
+
+    getinfo_web() {     //获取信息
         let outer = this;
 
         $.ajax({
