@@ -36,7 +36,7 @@ class AcGamePlayground {
 
 
 
-    show() {  // 打开playground界面
+    show(mode) {  // 打开playground界面
         this.$playground.show();
 
         this.resize();
@@ -44,13 +44,20 @@ class AcGamePlayground {
         this.width = this.$playground.width();
         this.height = this.$playground.height();
         this.game_map = new GameMap(this);
+
+        this.resize();
+
         this.players = [];  // 存放当前游戏中的所有玩家
         //将玩家加入游戏中
-        this.players.push(new Player(this, this.width / 2 / this.scale, 0.5, 0.05, "white", 0.15, true));
+        this.players.push(new Player(this, this.width / 2 / this.scale, 0.5, 0.05, "white", 0.15, "me", this.root.settings.username, this.root.settings.photo));
 
-        //创建好 5 个人机
-        for (let i = 0; i < 5; i ++ ) {
-            this.players.push(new Player(this, this.width / 2 / this.scale, 0.5, 0.05, this.get_random_color(), 0.15, false));
+        //单人模式创建好 5 个人机
+        if (mode === "single mode") {
+            for (let i = 0; i < 5; i ++ ) {
+                this.players.push(new Player(this, this.width / 2 / this.scale, 0.5, 0.05, this.get_random_color(), 0.15, "robot"));
+            }
+        }else if (mode === "multi mode") {  //多人模式
+
         }
     }
 
